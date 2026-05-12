@@ -7,11 +7,13 @@ import java.sql.SQLException;
 public class DatabaseConnection {
 
     private static final String URL =
-            "jdbc:mysql://localhost:3306/student_matcher";
+            "jdbc:mysql://mysql-12048c84-rotarudianardm-fe26.h.aivencloud.com:23485/defaultdb?sslMode=REQUIRED";
 
-    private static final String USER = "root";
+    private static final String USER =
+            "avnadmin";
 
-    private static final String PASSWORD = "Root123!";
+    private static final String PASSWORD =
+            "AVNS_uRcm_UmeKlIrJ1T3vXd";
 
     public static Connection getConnection() {
 
@@ -19,17 +21,25 @@ public class DatabaseConnection {
 
         try {
 
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            connection = DriverManager.getConnection(
-                    URL,
-                    USER,
-                    PASSWORD
+            Class.forName(
+                    "com.mysql.cj.jdbc.Driver"
             );
 
-            System.out.println("Database connected successfully!");
+            connection =
+                    DriverManager.getConnection(
+                            URL,
+                            USER,
+                            PASSWORD
+                    );
 
-        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println(
+                    "Database connected successfully!"
+            );
+
+        } catch (
+                ClassNotFoundException
+                | SQLException e
+        ) {
 
             e.printStackTrace();
         }

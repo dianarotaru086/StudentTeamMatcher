@@ -7,13 +7,18 @@ import java.sql.SQLException;
 public class DatabaseConnection {
 
     private static final String URL =
-            "jdbc:mysql://mysql-12048c84-rotarudianardm-fe26.h.aivencloud.com:23485/student_matcher?sslMode=REQUIRED&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8";
+            "jdbc:mysql://"
+                    + System.getenv("MYSQLHOST")
+                    + ":"
+                    + System.getenv("MYSQLPORT")
+                    + "/"
+                    + System.getenv("MYSQLDATABASE");
 
     private static final String USER =
-            "avnadmin";
+            System.getenv("MYSQLUSER");
 
     private static final String PASSWORD =
-            "AVNS_uRcm_UmeKlIrJ1T3vXd";
+            System.getenv("MYSQLPASSWORD");
 
     public static Connection getConnection() {
 
@@ -37,8 +42,8 @@ public class DatabaseConnection {
             );
 
         } catch (
-                ClassNotFoundException
-                | SQLException e
+                ClassNotFoundException |
+                SQLException e
         ) {
 
             e.printStackTrace();

@@ -235,6 +235,7 @@ public class UserDAO {
 
             Connection connection =
                     DatabaseConnection.getConnection();
+            System.out.println(connection);
 
             PreparedStatement statement =
                     connection.prepareStatement(sql);

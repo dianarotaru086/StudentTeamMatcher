@@ -12,7 +12,8 @@ public class DatabaseConnection {
                     + ":"
                     + System.getenv("MYSQLPORT")
                     + "/"
-                    + System.getenv("MYSQLDATABASE");
+                    + System.getenv("MYSQLDATABASE")
+                    + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
     private static final String USER =
             System.getenv("MYSQLUSER");

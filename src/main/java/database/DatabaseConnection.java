@@ -42,29 +42,30 @@ public class DatabaseConnection {
                         + port
                         + "/"
                         + database
-                        + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+                        + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+                        + "&connectTimeout=5000&socketTimeout=5000";
 
-        System.out.println("[DatabaseConnection] Connecting to: " + url + " as user: " + user);
+        System.out.println("[DatabaseConnection] Step 1: Building JDBC URL: " + url);
+        System.out.println("[DatabaseConnection] Step 2: Connecting as user: " + user);
 
         Connection connection = null;
 
         try {
 
+            System.out.println("[DatabaseConnection] Step 3: Loading MySQL JDBC driver...");
             Class.forName("com.mysql.cj.jdbc.Driver");
+            System.out.println("[DatabaseConnection] Step 4: Driver loaded. Attempting DriverManager.getConnection()...");
 
             connection = DriverManager.getConnection(url, user, password);
 
-            System.out.println("[DatabaseConnection] Database connected successfully!");
+            System.out.println("[DatabaseConnection] Step 5: Database connected successfully!");
 
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
 
-            System.err.println("[DatabaseConnection] ERROR: MySQL JDBC driver not found: " + e.getMessage());
-            e.printStackTrace();
-
-        } catch (SQLException e) {
-
-            System.err.println("[DatabaseConnection] ERROR: Failed to connect to database: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("[DatabaseConnection] ERROR: Exception type : " + e.getClass().getName());
+            System.err.println("[DatabaseConnection] ERROR: Exception message: " + e.getMessage());
+            System.err.println("[DatabaseConnection] ERROR: Full stack trace:");
+            e.printStackTrace(System.err);
         }
 
         return connection;

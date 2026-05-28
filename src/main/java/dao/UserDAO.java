@@ -18,13 +18,18 @@ public class UserDAO {
                 "INSERT INTO users(full_name, email, password, role, skills, work_style) " +
                         "VALUES (?, ?, ?, ?, ?, ?)";
 
+        Connection connection = DatabaseConnection.getConnection();
+
+        if (connection == null) {
+            System.err.println("[UserDAO] registerUser: Could not obtain database connection.");
+            return false;
+        }
+
+        PreparedStatement statement = null;
+
         try {
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
-
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
+            statement = connection.prepareStatement(sql);
 
             statement.setString(1, user.getFullName());
             statement.setString(2, user.getEmail());
@@ -41,7 +46,15 @@ public class UserDAO {
 
         } catch (SQLException e) {
 
+            System.err.println("[UserDAO] registerUser: SQL error: " + e.getMessage());
             e.printStackTrace();
+
+        } finally {
+
+            if (statement != null) {
+                try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
 
         return result;
@@ -54,19 +67,24 @@ public class UserDAO {
         String sql =
                 "SELECT * FROM users WHERE email = ? AND password = ?";
 
+        Connection connection = DatabaseConnection.getConnection();
+
+        if (connection == null) {
+            System.err.println("[UserDAO] loginUser: Could not obtain database connection.");
+            return null;
+        }
+
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
         try {
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
-
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
+            statement = connection.prepareStatement(sql);
 
             statement.setString(1, email);
             statement.setString(2, password);
 
-            ResultSet resultSet =
-                    statement.executeQuery();
+            resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
 
@@ -87,7 +105,18 @@ public class UserDAO {
 
         } catch (SQLException e) {
 
+            System.err.println("[UserDAO] loginUser: SQL error: " + e.getMessage());
             e.printStackTrace();
+
+        } finally {
+
+            if (resultSet != null) {
+                try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            if (statement != null) {
+                try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
 
         return user;
@@ -104,13 +133,18 @@ public class UserDAO {
                         "work_style = ? " +
                         "WHERE id = ?";
 
+        Connection connection = DatabaseConnection.getConnection();
+
+        if (connection == null) {
+            System.err.println("[UserDAO] updateUser: Could not obtain database connection.");
+            return false;
+        }
+
+        PreparedStatement statement = null;
+
         try {
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
-
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
+            statement = connection.prepareStatement(sql);
 
             statement.setString(
                     1,
@@ -132,8 +166,7 @@ public class UserDAO {
                     user.getId()
             );
 
-            int rows =
-                    statement.executeUpdate();
+            int rows = statement.executeUpdate();
 
             if(rows > 0){
 
@@ -142,7 +175,15 @@ public class UserDAO {
 
         } catch (SQLException e) {
 
+            System.err.println("[UserDAO] updateUser: SQL error: " + e.getMessage());
             e.printStackTrace();
+
+        } finally {
+
+            if (statement != null) {
+                try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
 
         return result;
@@ -189,13 +230,18 @@ public class UserDAO {
         String sql =
                 "UPDATE users SET profile_picture = ? WHERE id = ?";
 
-        try{
+        Connection connection = DatabaseConnection.getConnection();
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
+        if (connection == null) {
+            System.err.println("[UserDAO] updateProfilePicture: Could not obtain database connection.");
+            return false;
+        }
 
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
+        PreparedStatement statement = null;
+
+        try {
+
+            statement = connection.prepareStatement(sql);
 
             statement.setString(
                     1,
@@ -207,17 +253,24 @@ public class UserDAO {
                     userId
             );
 
-            int rows =
-                    statement.executeUpdate();
+            int rows = statement.executeUpdate();
 
             if(rows > 0){
 
                 result = true;
             }
 
-        }catch(SQLException e){
+        } catch(SQLException e){
 
+            System.err.println("[UserDAO] updateProfilePicture: SQL error: " + e.getMessage());
             e.printStackTrace();
+
+        } finally {
+
+            if (statement != null) {
+                try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
 
         return result;
@@ -231,29 +284,43 @@ public class UserDAO {
         String sql =
                 "SELECT COUNT(*) FROM projects WHERE creator_id = ?";
 
-        try{
+        Connection connection = DatabaseConnection.getConnection();
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
-            System.out.println(connection);
+        if (connection == null) {
+            System.err.println("[UserDAO] getCompletedProjectsCount: Could not obtain database connection.");
+            return 0;
+        }
 
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+
+            statement = connection.prepareStatement(sql);
 
             statement.setInt(1, userId);
 
-            ResultSet resultSet =
-                    statement.executeQuery();
+            resultSet = statement.executeQuery();
 
             if(resultSet.next()){
 
-                count =
-                        resultSet.getInt(1);
+                count = resultSet.getInt(1);
             }
 
-        }catch(SQLException e){
+        } catch(SQLException e){
 
+            System.err.println("[UserDAO] getCompletedProjectsCount: SQL error: " + e.getMessage());
             e.printStackTrace();
+
+        } finally {
+
+            if (resultSet != null) {
+                try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            if (statement != null) {
+                try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
 
         return count;
@@ -267,28 +334,43 @@ public class UserDAO {
         String sql =
                 "SELECT COUNT(*) FROM user_skills WHERE user_id = ?";
 
-        try{
+        Connection connection = DatabaseConnection.getConnection();
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
+        if (connection == null) {
+            System.err.println("[UserDAO] getSkillsCount: Could not obtain database connection.");
+            return 0;
+        }
 
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+
+            statement = connection.prepareStatement(sql);
 
             statement.setInt(1, userId);
 
-            ResultSet resultSet =
-                    statement.executeQuery();
+            resultSet = statement.executeQuery();
 
             if(resultSet.next()){
 
-                count =
-                        resultSet.getInt(1);
+                count = resultSet.getInt(1);
             }
 
-        }catch(SQLException e){
+        } catch(SQLException e){
 
+            System.err.println("[UserDAO] getSkillsCount: SQL error: " + e.getMessage());
             e.printStackTrace();
+
+        } finally {
+
+            if (resultSet != null) {
+                try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            if (statement != null) {
+                try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
 
         return count;
@@ -302,28 +384,43 @@ public class UserDAO {
         String sql =
                 "SELECT COUNT(*) FROM applications WHERE user_id = ?";
 
-        try{
+        Connection connection = DatabaseConnection.getConnection();
 
-            Connection connection =
-                    DatabaseConnection.getConnection();
+        if (connection == null) {
+            System.err.println("[UserDAO] getApplicationsCount: Could not obtain database connection.");
+            return 0;
+        }
 
-            PreparedStatement statement =
-                    connection.prepareStatement(sql);
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+
+            statement = connection.prepareStatement(sql);
 
             statement.setInt(1, userId);
 
-            ResultSet resultSet =
-                    statement.executeQuery();
+            resultSet = statement.executeQuery();
 
             if(resultSet.next()){
 
-                count =
-                        resultSet.getInt(1);
+                count = resultSet.getInt(1);
             }
 
-        }catch(SQLException e){
+        } catch(SQLException e){
 
+            System.err.println("[UserDAO] getApplicationsCount: SQL error: " + e.getMessage());
             e.printStackTrace();
+
+        } finally {
+
+            if (resultSet != null) {
+                try { resultSet.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            if (statement != null) {
+                try { statement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
 
         return count;

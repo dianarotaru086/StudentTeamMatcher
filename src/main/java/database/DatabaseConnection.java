@@ -43,7 +43,8 @@ public class DatabaseConnection {
                         + "/"
                         + database
                         + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-                        + "&connectTimeout=5000&socketTimeout=5000";
+                        + "&connectTimeout=30000&socketTimeout=30000"
+                        + "&autoReconnect=true&maxReconnects=3";
 
         System.out.println("[DatabaseConnection] Step 1: Building JDBC URL: " + url);
         System.out.println("[DatabaseConnection] Step 2: Connecting as user: " + user);
